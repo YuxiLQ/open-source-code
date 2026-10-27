@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>小黄豆吃豆 · 奶油版</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ffd100'/%3E%3Ccircle cx='34' cy='40' r='7' fill='%238a4d1e'/%3E%3Ccircle cx='66' cy='40' r='7' fill='%238a4d1e'/%3E%3Cpath d='M32 62 Q50 80 68 62' stroke='%238a4d1e' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  display:flex;flex-direction:column;align-items:center;
+  background:radial-gradient(circle at 50% 0%,#fff7e0,#ffe9b3 70%,#ffd98a);
+  font-family:'YouYuan','幼圆','Yuanti SC','PingFang SC','Microsoft YaHei',sans-serif;
+  min-height:100vh;
+}
+.app{
+  width:100%;max-width:420px;flex:1;
+  display:flex;flex-direction:column;align-items:center;
+  padding:12px 12px 20px;position:relative;
+}
+/* ===== 奶油字体通用样式 ===== */
+.cream{
+  color:#8a4d1e;font-weight:800;letter-spacing:1px;
+  text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 5px 0 rgba(120,70,20,.16);
+}
+.btn-cream{
+  font-family:inherit;font-weight:800;color:#fff;letter-spacing:1px;
+  text-shadow:0 2px 0 rgba(150,90,20,.35),0 3px 0 rgba(0,0,0,.08);
+}
+/* ===== 顶部公告栏（跑马灯） ===== */
+.notice-wrap{
+  width:100%;max-width:420px;position:fixed;top:0;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;z-index:20;
+  padding:8px 10px;background:#fff7e2;border-bottom:3px solid #ffd98a;
+  box-shadow:0 4px 14px rgba(150,90,20,.12);
+}
+.notice-label{
+  flex:none;font-size:13px;font-weight:800;color:#fff;
+  background:linear-gradient(180deg,#ffb800,#ff9500);
+  border-radius:999px;padding:5px 12px;box-shadow:0 3px 0 rgba(170,100,0,.3);
+}
+.notice-bar{flex:1;overflow:hidden;border-radius:999px;background:#fff}
+.notice-track{
+  display:inline-flex;flex-wrap:nowrap;white-space:nowrap;
+  will-change:transform;
+  animation:noticeScroll 12s linear infinite;
+}
+.notice-text{
+  flex:0 0 auto;white-space:nowrap;font-size:15px;padding:0 2.5em;
+  color:#8a4d1e;font-weight:700;
+}
+@keyframes noticeScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+/* ===== 反馈邮箱 ===== */
+#emailText{font-size:14px;color:#a5712f;font-weight:700;margin:54px 0 6px}
+/* ===== 画布区 ===== */
+.stage{position:relative;border-radius:22px;padding:10px;background:#fffdf5;box-shadow:0 10px 26px rgba(150,90,20,.18)}
+#g{
+  display:block;border-radius:16px;border:3px solid #fff;
+  box-shadow:inset 0 0 0 2px #ffd98a;background:#71c5cf;
+  width:min(360px,92vw);height:auto;
+}
+#startBtn{
+  position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);
+  padding:16px 34px;font-size:24px;border:none;border-radius:999px;cursor:pointer;
+  background:linear-gradient(180deg,#ffc93c,#ffa000);
+  box-shadow:0 6px 0 #d98400,0 10px 18px rgba(150,90,20,.3);
+  font-family:inherit;font-weight:800;color:#fff;letter-spacing:3px;
+}
+#startBtn:active{transform:translate(-50%,-46%);box-shadow:0 3px 0 #d98400,0 6px 10px rgba(150,90,20,.3)}
+.control{
+  width:74px;height:74px;font-size:30px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(180deg,#ffc93c,#ffa000);
+  color:#fff;box-shadow:0 5px 0 #d98400,0 8px 14px rgba(150,90,20,.28);
+  display:none;font-family:inherit;font-weight:800;
+}
+.control:active{transform:translateY(3px);box-shadow:0 2px 0 #d98400}
+.controls{display:flex;gap:46px;margin-top:14px;width:100%;justify-content:center}
+/* ===== 右侧操作按钮 ===== */
+#btnBox{position:absolute;right:8px;top:14px;display:flex;flex-direction:column;gap:8px}
+.optBtn{
+  padding:8px 14px;border:none;border-radius:999px;cursor:pointer;
+  background:#fffdf5;color:#8a4d1e;font-size:14px;font-weight:700;
+  box-shadow:0 3px 0 rgba(170,100,0,.18);font-family:inherit;
+}
+audio{display:none}
+</style>
+</head>
+<body>
+<!-- 顶部公告栏 -->
+<div class="notice-wrap">
+  <span class="notice-label cream">公告</span>
+  <div class="notice-bar">
+    <div class="notice-track" id="noticeTrack">
+      <span class="notice-text">欢迎来到小黄豆吃豆游戏！吃满 50 分就能看到烟花哦~</span>
+      <span class="notice-text">欢迎来到小黄豆吃豆游戏！吃满 50 分就能看到烟花哦~</span>
+    </div>
+  </div>
+</div>
+<div class="app">
+  <div id="emailText">反馈邮箱：mcminmopknbcl123@163.com</div>
+  <div class="stage">
+    <canvas id="g" width="320" height="480"></canvas>
+    <button id="startBtn" class="btn-cream">开始游戏</button>
+    <div id="btnBox">
+      <button class="optBtn" id="exitBtn">退出游戏</button>
+      <button class="optBtn" id="clearScoreBtn">清除分数</button>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="control" id="l">←</button>
+    <button class="control" id="r">→</button>
+  </div>
+  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" loop preload="auto">
+</div>
+<script>
+var c=document.getElementById("g"),ctx=c.getContext("2d");
+var s=document.getElementById("startBtn"),l=document.getElementById("l"),r=document.getElementById("r");
+var exitBtn=document.getElementById('exitBtn');
+var clearScoreBtn=document.getElementById('clearScoreBtn');
+var bgMusic=document.getElementById('bgMusic');
+// 分数、金币本地保存
+var sc=Number(localStorage.getItem('gameScore'))||0;
+var coin=Number(localStorage.getItem('gameCoin'))||0;
+var x=60,y=240,v=6,m=0,w=0,run=0,ov=0,pl=0,pr=0,it=[],sz=16,sp=2,win=0;
+var particles=[];   // 烟花粒子（单层，限制数量，防卡顿）
+// ===== 公告跑马灯（内容写死在HTML里，玩家不可修改） =====
+// 点击开始游戏播放音乐
+s.onclick=function(){
+  s.style.display="none";
+  l.style.display="block";
+  r.style.display="block";
+  run=1;ov=0;
+  bgMusic.play().catch(function(){});
+};
+// 退出游戏，暂停音乐，返回主页
+exitBtn.onclick=function(){
+  run=0;ov=0;x=60;it=[];particles=[];win=0;w=0;
+  bgMusic.pause();
+  s.style.display='block';
+  l.style.display='none';
+  r.style.display='none';
+};
+// 只清空分数，金币保留
+clearScoreBtn.onclick=function(){
+  sc=0;localStorage.removeItem('gameScore');
+};
+l.ontouchstart=l.onmousedown=function(){pl=1};
+l.ontouchend=l.onmouseup=function(){pl=0};
+r.ontouchstart=r.onmousedown=function(){pr=1};
+r.ontouchend=r.onmouseup=function(){pr=0};
+// 页面任意点击，直接启动背景音乐
+document.body.addEventListener('click',function(){bgMusic.play().catch(function(){});},{once:true});
+c.onclick=function(){
+  if(ov){
+    x=60;sc=0;coin=0;it=[];particles=[];win=0;ov=0;
+    localStorage.removeItem('gameScore');
+    localStorage.removeItem('gameCoin');
+  }
+};
+function add(){
+  var px=60+Math.random()*(c.width-80);
+  var t=["meat1","meat5","poo","bomb","light","gold"];
+  it.push({x:px,y:-sz,t:t[Math.floor(Math.random()*6)]});
+}
+// ===== 放烟花（修复卡顿：限制粒子总数 + 单层数组 + 尾迹淡出） =====
+function launchFireworks(){
+  var bursts=2;
+  for(var b=0;b<bursts;b++){
+    var cx=40+Math.random()*(c.width-80);
+    var cy=50+Math.random()*(c.height-150);
+    var n=26;
+    for(var i=0;i<n;i++){
+      if(particles.length>=180) break;      // 数量上限，防止无限堆积
+      var an=Math.PI*2/n*i;
+      var spd=1.6+Math.random()*1.6;
+      particles.push({
+        x:cx,y:cy,
+        vx:Math.cos(an)*spd,vy:Math.sin(an)*spd,
+        life:52+Math.random()*22,
+        c:'hsl('+(Math.random()*360)+',100%,65%)',
+        s:2.4+Math.random()*1.6
+      });
+    }
+  }
+}
+// 本地保存节流（避免每帧频繁写入导致卡顿）
+var saveTimer=0;
+function saveScore(){saveTimer++;if(saveTimer>=6){saveTimer=0;localStorage.setItem('gameScore',sc);localStorage.setItem('gameCoin',coin);}}
+function lp(){
+  if(run&&!ov){
+    pl?(x-=v,m=1):pr?(x+=v,m=1):m=0;
+    x=Math.max(20,Math.min(c.width-20,x));
+    if(it.length==0||it[it.length-1].y==80)add();
+    for(var i=0;i<it.length;i++){
+      var o=it[i];o.y+=sp;
+      if(Math.hypot(o.x-x,o.y-y)<30){
+        switch(o.t){
+          case"meat1":sc+=1;break;
+          case"meat5":sc+=5;break;
+          case"poo":w?0:sc-=1;sc=Math.max(0,sc);break;
+          case"bomb":w?0:sc=0;break;
+          case"light":w=1;setTimeout(function(){w=0;},10000);break;
+          case"gold":sc+=1;coin+=1;break;
+        }
+        it.splice(i,1);i--;
+        if(sc>=50&&!win){
+          win=1;coin+=50;launchFireworks();
+        }
+        saveScore();
+      }
+    }
+  }
+  dr();
+  requestAnimationFrame(lp);
+}
+function creamText(txt,x,y,size){
+  ctx.font='bold '+size+'px "YouYuan","幼圆","Yuanti SC","PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign='left';
+  ctx.lineWidth=size*0.3;
+  ctx.strokeStyle='rgba(120,70,20,.14)';
+  ctx.strokeText(txt,x,y+2);
+  ctx.lineWidth=size*0.22;
+  ctx.strokeStyle='#ffffff';
+  ctx.strokeText(txt,x,y);
+  ctx.fillStyle='#8a4d1e';
+  ctx.fillText(txt,x,y);
+}
+function dr(){
+  ctx.clearRect(0,0,c.width,c.height);
+  if(!run)return;
+  // 小黄豆
+  ctx.beginPath();ctx.arc(x,y,20,0,Math.PI*2);ctx.fillStyle="#ffd100";ctx.fill();
+  ctx.fillStyle="#000";
+  ctx.beginPath();ctx.arc(x-7,y-8,4,0,Math.PI*2);ctx.arc(x+7,y-8,4,0,Math.PI*2);ctx.fill();
+  if(m){ctx.fillStyle="#662506";ctx.beginPath();ctx.arc(x,y+8,8,0,Math.PI);ctx.fill();}
+  if(w){ctx.strokeStyle="#3399ff";ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.stroke();}
+  // 掉落物
+  for(var i=0;i<it.length;i++){
+    var o=it[i],n="";
+    if(o.t=="meat1"){ctx.fillStyle="#FFD300";n="1";}
+    else if(o.t=="meat5"){ctx.fillStyle="#FF2B2B";n="5";}
+    else if(o.t=="poo"){ctx.fillStyle="#704930";}
+    else if(o.t=="bomb"){ctx.fillStyle="#1A1A1A";}
+    else if(o.t=="light"){ctx.fillStyle="#30A8FF";}
+    else if(o.t=="gold"){ctx.fillStyle="#ffd700";n="币";}
+    ctx.beginPath();ctx.arc(o.x,o.y,sz,0,Math.PI*2);ctx.fill();
+    if(n){
+      ctx.fillStyle="#fff";ctx.font="bold 18px 'YouYuan','幼圆','PingFang SC','Microsoft YaHei',sans-serif";
+      ctx.textAlign="center";ctx.fillText(n,o.x,o.y+7);ctx.textAlign="left";
+    }
+    if(o.t=="bomb"){
+      ctx.strokeStyle="#5C3818";ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.moveTo(o.x,o.y-sz);ctx.lineTo(o.x+8,o.y-sz-10);ctx.stroke();
+      ctx.fillStyle="#FF7700";ctx.beginPath();ctx.arc(o.x+8,o.y-sz-10,3.5,0,Math.PI*2);ctx.fill();
+    }
+  }
+  // 烟花粒子（从尾部开始删，防止索引错乱）
+  for(var j=particles.length-1;j>=0;j--){
+    var p=particles[j];
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.02;p.life--;
+    ctx.globalAlpha=Math.min(1,p.life/16);
+    ctx.fillStyle=p.c;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.s,0,Math.PI*2);ctx.fill();
+    if(p.life<=0){particles.splice(j,1);}
+  }
+  ctx.globalAlpha=1;
+  creamText("分:"+sc,10,64,22);
+  creamText("币:"+coin,10,94,22);
+  if(w)creamText("无敌状态",10,126,20);
+}
+lp();
+</script>
+</body>
+</html>
